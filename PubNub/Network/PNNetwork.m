@@ -1183,7 +1183,7 @@ NS_ASSUME_NONNULL_END
 - (void)handleData:(NSData *)data loadedWithTask:(NSURLSessionDataTask *)task error:(NSError *)requestError 
       usingSuccess:(NSURLSessionDataTaskSuccess)success failure:(NSURLSessionDataTaskFailure)failure {
     
-    PNLogRequest(self.client.logger, @"<PubNub::Network::DEBUG>\nRequest: %@\nNSURLSession error: %@\nHTTP request error: %@\nRAW data: %@\nHEADERS: %@",
+    PNLogRequest(self.client.logger, @"<PubNub::Network::DEBUG>\nRequest: %@\nNSURLSession error: %@\nRAW data: %@\nHEADERS: %@",
                  task.originalRequest.URL, requestError, [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding],
                  ((NSHTTPURLResponse *)task.response).allHeaderFields);
     dispatch_async(self.processingQueue, ^{
