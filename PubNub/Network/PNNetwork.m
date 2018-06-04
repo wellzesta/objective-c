@@ -883,6 +883,7 @@ NS_ASSUME_NONNULL_END
     __weak __typeof(self) weakSelf = self;
     void(^parseCompletion)(NSDictionary *) = ^(NSDictionary *processedData){
         
+        PNLogRequest(self.client.logger, @"<PubNub::Network::DEBUG>\nData: %@\nParser: %@\nParsed to: %@", data, parser, processedData);
         if (processedData || parser == [PNErrorParser class]) {
             
             block(processedData, (parser == [PNErrorParser class]));
@@ -1182,6 +1183,9 @@ NS_ASSUME_NONNULL_END
 - (void)handleData:(NSData *)data loadedWithTask:(NSURLSessionDataTask *)task error:(NSError *)requestError 
       usingSuccess:(NSURLSessionDataTaskSuccess)success failure:(NSURLSessionDataTaskFailure)failure {
     
+    PNLogRequest(self.client.logger, @"<PubNub::Network::DEBUG>\nRequest: %@\nNSURLSession error: %@\nHTTP request error: %@\nRAW data: %@\nHEADERS: %@",
+                 task.originalRequest.URL, requestError, [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding],
+                 ((NSHTTPURLResponse *)task.response).allHeaderFields);
     dispatch_async(self.processingQueue, ^{
         
         NSError *serializationError = nil;
@@ -1195,6 +1199,8 @@ NS_ASSUME_NONNULL_END
 - (void)handleOperation:(PNOperationType)operation taskDidComplete:(NSURLSessionDataTask *)task
                withData:(id)responseObject completionBlock:(id)block {
     
+    PNLogRequest(self.client.logger, @"<PubNub::Network::DEBUG>\nRequest: %@\nSuccess with object: %@", task.originalRequest.URL, responseObject);
+    
     __weak __typeof(self) weakSelf = self;
     [self parseData:responseObject withParser:[self parserForOperation:operation]
          completion:^(NSDictionary *parsedData, BOOL parseError) {
@@ -1206,6 +1212,8 @@ NS_ASSUME_NONNULL_END
 
 - (void)handleOperation:(PNOperationType)operation taskDidFail:(NSURLSessionDataTask *)task
               withError:(NSError *)error completionBlock:(id)block {
+    
+    PNLogRequest(self.client.logger, @"<PubNub::Network::DEBUG>\nRequest: %@\nError: %@", task.originalRequest.URL, error);
     
     if (error.code == NSURLErrorCancelled) {
         
@@ -1246,6 +1254,7 @@ NS_ASSUME_NONNULL_END
         error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorCancelled
                                 userInfo:error.userInfo];
     }
+    
     if ([self operationExpectResult:operation] && !isError) {
         
         result = [[self resultClassForOperation:operation] objectForOperation:operation
@@ -1259,6 +1268,8 @@ NS_ASSUME_NONNULL_END
         Class statusClass = (isError ? [PNErrorStatus class] : [self statusClassForOperation:operation]);
         status = (PNStatus *)[statusClass objectForOperation:operation completedWithTask:task
                                                processedData:data processingError:error];
+        
+        PNLogRequest(self.client.logger, @"<PubNub::Network::DEBUG> Error status: %@", status);
     }
     
     if (result || status) {

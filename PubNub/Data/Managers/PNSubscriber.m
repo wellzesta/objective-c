@@ -930,6 +930,8 @@ NS_ASSUME_NONNULL_END
         [self.client processOperation:PNSubscribeOperation withParameters:parameters
                       completionBlock:^(PNStatus *status){
                           
+              PNLogAPICall(self.client.logger, @"<PubNub::API::DEBUG> Subscribe operation response: %@", [status debugDescription]);
+                          
               __strong __typeof(self) strongSelf = weakSelf;
               [strongSelf handleSubscriptionStatus:(PNSubscribeStatus *)status];
               if (block) {
@@ -984,6 +986,8 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)continueSubscriptionCycleIfRequiredWithCompletion:(PNSubscriberCompletionBlock)block {
+    
+    PNLogAPICall(self.client.logger, @"<PubNub::API::DEBUG> Continue subscription loop.");
 
     [self subscribe:NO usingTimeToken:nil withState:nil completion:block];
 }
@@ -1166,6 +1170,8 @@ NS_ASSUME_NONNULL_END
 
 - (void)handleSuccessSubscriptionStatus:(PNSubscribeStatus *)status {
     
+    PNLogAPICall(self.client.logger, @"<PubNub::API::DEBUG> Subscribe operation success: %@", [status debugDescription]);
+    
     // Try fetch time token from passed result/status objects.
     BOOL isInitialSubscription = ([status.clientRequest.URL.query rangeOfString:@"tt=0"].location != NSNotFound);
     NSNumber *overrideTimeToken = self.overrideTimeToken;
@@ -1202,6 +1208,8 @@ NS_ASSUME_NONNULL_END
 }
 
 - (void)handleFailedSubscriptionStatus:(PNSubscribeStatus *)status {
+    
+    PNLogAPICall(self.client.logger, @"<PubNub::API::DEBUG> Subscribe operation failed: %@", [status debugDescription]);
     
     // Silence static analyzer warnings.
     // Code is aware about this case and at the end will simply call on 'nil' object method.
@@ -1392,6 +1400,9 @@ NS_ASSUME_NONNULL_END
 
 - (void)handleLiveFeedEvents:(PNSubscribeStatus *)status forInitialSubscription:(BOOL)initialSubscription 
            overrideTimeToken:(NSNumber *)overrideTimeToken {
+    
+    PNLogAPICall(self.client.logger, @"<PubNub::API::DEBUG> Handle live events (initial? %@ | override timetoken: %@)",
+                 initialSubscription ? @"YES" : @"NO", overrideTimeToken);
     
     NSMutableArray *events = [(NSArray *)(status.serviceData)[@"events"] mutableCopy];
     NSUInteger eventsCount = events.count;
