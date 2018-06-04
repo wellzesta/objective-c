@@ -883,6 +883,8 @@ NS_ASSUME_NONNULL_END
 - (void)subscribe:(BOOL)initialSubscribe usingTimeToken:(NSNumber *)timeToken 
         withState:(NSDictionary<NSString *, id> *)state completion:(PNSubscriberCompletionBlock)block {
     
+    PNLogAPICall(self.client.logger, @"<PubNub::API::DEBUG> Subscription loop with: %@", [self allObjects]);
+    
     [self stopRetryTimer];
 
     // Silence static analyzer warnings.
