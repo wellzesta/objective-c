@@ -22,7 +22,7 @@ before_install:
 - sudo gem install cocoapods --pre
 script:
 - set -o pipefail
-- "curl -X \"POST\" \"https://api.travis-ci.org/repo/pubnub%2Fjavascript/requests\" -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Travis-API-Version: 3' -H 'Authorization: token $TEST_TOKEN' -d $'{\"request\":{\"branch\":\"CE-3355-Message-Counts-API\"}}'"
+- curl -X 'POST' 'https://api.travis-ci.org/repo/pubnub%2Fjavascript/requests' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Travis-API-Version: 3' -H 'Authorization: token ${TEST_TOKEN}' -d $'{"request":{"branch":"CE-3355-Message-Counts-API"}}'
 - xcodebuild -workspace ./PubNub.xcworkspace -scheme "${SCHEME}" -destination "${DESTINATION}"
   clean build test | xcpretty -f `xcpretty-travis-formatter`
 after_success:
