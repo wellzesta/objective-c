@@ -20,7 +20,7 @@ matrix:
 before_install:
   - sudo gem install xcpretty-travis-formatter
   - sudo gem install cocoapods --pre
-
+ 
 script:
   - set -o pipefail
   - |
