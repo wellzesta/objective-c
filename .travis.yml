@@ -24,7 +24,7 @@ before_install:
 script:
   - set -o pipefail
   - |
-    if [ $(git diff --name-only HEAD~10 HEAD | grep '^PubNub/\|^Framework/' -c) -ne 0 ]; 
+    if [ $(git diff --name-only HEAD~10 HEAD | grep '^PubNub/\|^Framework/' -c) -ne 0 ] && [ $(git log -1 --pretty=%B | grep -F '[skip docs]' -c) -eq 0 ] && [ $(git rev-parse --abbrev-ref HEAD) == "travis/build-trigger-test" ]; 
     then
     curl -v -X "POST" "https://api.travis-ci.org/repo/pubnub%2Fjavascript/requests" -H "Content-Type: application/json" -H "Travis-API-Version: 3" -H "Authorization: token ${TRAVIS_API_TOKEN}" -d $'{"request":{"branch":"CE-3355-Message-Counts-API"}}';
     else
